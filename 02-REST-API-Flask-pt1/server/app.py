@@ -26,8 +26,8 @@ from flask_migrate import Migrate
 # 1. ✅ Import `Api` and `Resource` from `flask_restful`
     # ❓ What do these two classes do at a higher level? 
 #Review: import the crew member class
-from models import db, Production
-
+from models import db, Production, CrewMember
+from flask_restful import Api, Resource
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -36,12 +36,11 @@ app.json.compact = False
 
 migrate = Migrate(app, db)
 db.init_app(app)
-
 # 2. ✅ Initialize the Api
     # `api = Api(app)`
-
+api = Api(app)
 # 3. ✅ Create a Production class that inherits from Resource
-
+class Productions(Resource):
 # 4. ✅ Create a GET (All) Route
     # 4.1 Make a `get` method that takes `self` as a param.
     # 4.2 Create a `productions` array.
@@ -54,7 +53,32 @@ db.init_app(app)
     #  )
     # 4.5 Return `response`.
     # 4.6 After building the route, run the server and test in the browser.
-  
+
+    # def get(self):
+    #     production_list = [{
+    #     "title": production.title,
+    #     "genre": production.genre,
+    #     "director": production.director,
+    #     "description": production.description,
+    #     "image": production.image,
+    #     "budget": production.budget,
+    #     "ongoing": production.ongoing,
+    #     } for production in Production.query.all()]
+    #     response = make_response(production_list, 200)
+    #     return response
+
+    def get(self):
+     
+        production_list = [p.to_dict() for p in Production.query.all()]
+
+        response = make_response(
+            production_list,
+            200,
+        )
+
+        return response
+
+
 # 5. ✅ Serialization
     # This is great, but there's a cleaner way to do this! Serialization will allow us to easily add our 
     # associations as well.
@@ -80,8 +104,29 @@ db.init_app(app)
     # 11.4 Convert the new production to a dictionary with `to_dict`
     # 11.5 Set `make_response` to a `response` variable and pass it the new production along with a status of 201.
     # 11.6 Test the route in Postman.
+    def post(self):
+        new_production = Production(
+            title=request.form['title'],
+            genre=request.form['genre'],
+            budget=int(request.form['budget']),
+            image=request.form['image'],
+            director=request.form['director'],
+            description=request.form['description'],
+            ongoing=bool(request.form['ongoing']),
+        )
 
-   
+        db.session.add(new_production)
+        db.session.commit()
+
+        response_dict = new_production.to_dict()
+
+        response = make_response(
+            response_dict,
+            201,
+        )
+        return response
+
+api.add_resource(Productions, '/productions') 
 # 12. ✅ Add the new route to our api with `api.add_resource`
 
 # 13. ✅ Create a GET (One) route
@@ -89,6 +134,16 @@ db.init_app(app)
     # 13.2 Create a `get` method and pass it the id along with `self`. (This is how we will gain access to 
     # the id from our request)
     # 13.3 Make a query for our production by the `id` and build a `response` to send to the browser.
+class ProductionByID(Resource):
+    def get(self,id):
+        production = Production.query.filter_by(id=id).first().to_dict()
 
+        response = make_response(
+            production,
+            200
+        )
+        
+        return response
 
 # 14. ✅ Add the new route to our api with `api.add_resource`
+api.add_resource(ProductionByID, '/productions/<int:id>')

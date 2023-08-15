@@ -3,7 +3,7 @@ from faker import Faker
 
 from app import app
 #Review: import the crew member class
-from models import db, Production
+from models import db, Production, CrewMember
 
 db.init_app(app)
 
@@ -11,6 +11,7 @@ fake = Faker()
 
 with app.app_context():   
     Production.query.delete()
+    CrewMember.query.delete()
     #Delete all crew members
 
     productions = []
@@ -35,5 +36,24 @@ with app.app_context():
     db.session.commit()
 
     #create a list of roles and crewmembers for each production
+    hamlet_roles = ['Hamlet', 'Ophelia', 'Polonius', 'Laertes', 'Horatio', 'Gertrude', 'Ghost' ]
+    hamlet_crew_members = [CrewMember(name=fake.name(), role=role, production_id=p1.id) for role in hamlet_roles]
+    db.session.add_all(hamlet_crew_members)
+    db.session.commit()
 
-    
+    cats_roles = ['Mr. Mistoffelees', 'Bombalurina', 'Rumpletezer', 'Grizabella']
+    cats_crew_members = [CrewMember(name=fake.name(), role=role, production_id=p2.id) for role in cats_roles]
+    db.session.add_all(cats_crew_members)
+    db.session.commit()
+
+    carmen_roles = ['Carmen', 'Escamillo', 'Jose', 'Mercedes', 'Dancaire']
+    carmen_crew_members = [CrewMember(name=fake.name(), role=role, production_id=p3.id) for role in carmen_roles]
+    db.session.add_all(carmen_crew_members)
+    db.session.commit()
+
+    hamilton_roles = ['Alexander Hamilton', 'King George III', 'Marquis de Lafayett', 'Angelica Schuyler Church', 'Peggy Schuyler', 'Thomas Jefferson']
+    hamilton_crew_members = [CrewMember(name=fake.name(), role=role, production_id=p4.id) for role in hamilton_roles]
+    db.session.add_all(hamilton_crew_members)
+    db.session.commit()
+
+
