@@ -61,8 +61,8 @@ function ProductionForm({addProduction}) {
     return (
       <div className='App'>
       <Form onSubmit={formik.handleSubmit}>
-        {errors&& <h3 style={{color: "red"}}>{errors.toUpperCase()}</h3>}
-        {/* {formik.errors&& Object.values(formik.errors).map(error => <h3 style={{color: "green"}}>{error.toUpperCase()}</h3>)} */}
+        {/* {errors && <h3 style={{color: "red"}}>{errors.toUpperCase()}</h3>} */}
+        {formik.errors&& Object.values(formik.errors).map(error => <h3 style={{color: "green"}}>{error.toUpperCase()}</h3>)}
         <label>Title </label>
         <input type='text' name='title' value={formik.values.title} onChange={formik.handleChange}/>
         
