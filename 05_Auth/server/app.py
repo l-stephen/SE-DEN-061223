@@ -22,7 +22,7 @@ api = Api(app)
 CORS(app)
 #1. ✅ python -c 'import os; print(os.urandom(16))'
 #Used to hash the session data
-app.secret_key = b'\xb8C\xack"}]c_\xb7\xf0\xcdng\xe7\xdf'
+app.secret_key = b'\\\xc2,\xc77\xb5\xf7\xb4\xed\xf2|o\x90U\xe7\xb8'
 
 # 2.✅ Create a Login route that will save a user to the session
     # 3.1 Create a login class that inherits from Resource

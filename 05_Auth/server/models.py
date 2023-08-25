@@ -17,6 +17,7 @@ class User(db.Model,SerializerMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique = True)
+    password = db.Column(db.String)
     # 6) Add the password hash attribute
     
     created_at = db.Column(db.DateTime, server_default=db.func.now())

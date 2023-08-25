@@ -6,3 +6,8 @@ faker = Faker()
 with app.app_context():
     print("Deleting Customers")
     User.query.delete()
+
+    stephen = User(name="Stephen", password="password")
+    db.session.add(stephen)
+    db.session.commit()
+
