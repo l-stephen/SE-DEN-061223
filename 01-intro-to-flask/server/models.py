@@ -16,7 +16,7 @@ class Production(db.Model):
     __tablename__ = "productions"
 
     id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String)
+    title = db.Column(db.String, nullable=False)
     genre = db.Column(db.String)
     budget = db.Column(db.Float)
     image = db.Column(db.String)
