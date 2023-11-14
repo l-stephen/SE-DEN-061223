@@ -28,12 +28,8 @@
 
 from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
+from models import db, Production
 
-# 1. ✅ Import `Api` and `Resource` from `flask_restful`
-    # ❓ What do these two classes do at a higher level? 
-#Review: import the crew member class
-from models import db, Production, CrewMember
-from flask_restful import Api, Resource
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -50,9 +46,9 @@ db.init_app(app)
 # https://www.restapitutorial.com/httpstatuscodes.html 
 
 
-#make a get and post request to /productions, make responses and return a status code
+#2. make a get and post request to /productions, make responses and return a status code
 #demonstrate serialization
 
 
 
-#make a get, patch, and delete request to /productions/id, make responses and return a status code
+#8. make a get, patch, and delete request to /productions/id, make responses and return a status code
