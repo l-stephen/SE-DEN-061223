@@ -49,6 +49,55 @@ db.init_app(app)
 #2. make a get and post request to /productions, make responses and return a status code
 #demonstrate serialization
 
-
+@app.route('/productions', methods=["GET", "POST"])
+def showProductions():
+    if request.method == "GET":
+        productions = Production.query.all()
+        all_productions = []
+        for play in productions:
+            all_productions.append(play.to_dict(only=('title', 'budget', 'genre', 'image', 'director', 'description', 'ongoing')))
+        return make_response(all_productions, 200)
+    elif request.method == "POST":
+        data = request.get_json()
+        new_production = Production(
+            title = data["title"],
+            genre = data["genre"],
+            budget = data["budget"],
+            image = data["image"],
+            director = data["director"],
+            description = data["description"],
+            ongoing = data["ongoing"]
+        )
+        db.session.add(new_production)
+        db.session.commit()
+        return make_response(new_production.to_dict(), 201)
+    return {}
 
 #8. make a get, patch, and delete request to /productions/id, make responses and return a status code
+
+@app.route('/productions/<id>', methods=["GET", "PATCH", "DELETE"])
+def showProductionsById(id):
+    production = Production.query.filter(Production.id == id).first()
+
+    if production:
+        if request.method == "PATCH":
+            data = request.get_json()
+            for attr in data:
+                setattr(production, attr, data[attr])
+            print(production.to_dict())
+            db.session.add(production)
+            db.session.commit()
+            return make_response(production.to_dict(), 202)
+        elif request.method == "DELETE":
+            db.session.delete(production)
+            db.session.commit()
+            return make_response(production.to_dict(), 204)
+        else:
+            return make_response(production.to_dict(), 200)
+
+    else:
+        return make_response("Invalid request", 400)
+
+
+# if __name__ == '__main__':
+#     app.run(port=5555)

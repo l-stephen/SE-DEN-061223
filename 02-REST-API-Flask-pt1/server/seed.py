@@ -5,8 +5,6 @@ from app import app
 #Review: import the crew member class
 from models import db, Production, CrewMember
 
-db.init_app(app)
-
 fake = Faker()
 
 with app.app_context():   
