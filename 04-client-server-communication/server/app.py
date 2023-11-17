@@ -66,9 +66,9 @@ class Productions(Resource):
         new_production = Production(
             title=form_json['title'],
             genre=form_json['genre'],
-            budget=int(form_json['budget']),
-            image=form_json['image'],
-            director=form_json['director'],
+            # budget=int(form_json['budget']),
+            # image=form_json['image'],
+            # director=form_json['director'],
             description=form_json['description']
         )
 

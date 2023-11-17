@@ -1,49 +1,114 @@
-// 📚 Review With Students:
-    // Request response cycle
-    //Note: This was build using v5 of react-router-dom
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, useNavigate } from 'react-router-dom'
-import {createGlobalStyle} from 'styled-components'
+
 import {useEffect, useState} from 'react'
-import Home from './components/Home'
-import ProductionForm from './components/ProductionForm'
-import ProductionEdit from './components/ProductionEdit'
-import Navigation from './components/Navigation'
-import ProductionDetail from './components/ProductionDetail'
-import NotFound from './components/NotFound'
-
+import EditProductionForm from "./components/EditProductionForm"
 function App(){
-      //Note: This may be a good opportunity to refactor with context
   const [productions, setProductions] = useState([])
+  const [title, setTitle] = useState("")
+  const [genre, setGenre] = useState("")
+  const [description, setDescription] = useState("")
+  const [editProduction, setEditProduction] = useState(false);
   const [production_edit, setProductionEdit] = useState(false)
-  // const navigate = useNavigate()
-  //4. GET Productions
-  //navigate to client/src/components/ProductionForm.js
 
-
-  const addProduction = (production) => setProductions(current => [...current,production])
-  const updateProduction = (updated_production) => setProductions(productions => productions.map(production => production.id == updated_production.id? updated_production : production))
-  const deleteProduction = (deleted_production) => setProductions(productions => productions.filter((production) => production.id !== deleted_production.id) )
-
-  const handleEdit = (production) => {
-    setProductionEdit(production)
-    // navigate(`/productions/edit/${production.id}`)
+  function handleTitle(e){
+    setTitle(e.target.value)
   }
 
-  const  router = createBrowserRouter(
-    createRoutesFromElements(
-      <Route path ="/" element={<Navigation />}>
-        <Route index element={<Home productions={productions} />}/>
-        <Route  path='/productions/new' element={<ProductionForm addProduction={addProduction}/>}/>
-        <Route  path='/productions/edit/:id' elemebt={<ProductionEdit updateProduction={updateProduction} production_edit={production_edit}/>}/>
-        <Route path='/productions/:id' element={<ProductionDetail handleEdit={handleEdit} deleteProduction={deleteProduction} />}/>
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    )
-  )
+  function handleGenre(e){
+    setGenre(e.target.value)
+  }
+
+  function handleDescription(e){
+    setDescription(e.target.value)
+  }
+
+  useEffect(()=> {
+    fetch("/productions")
+    .then(res => res.json())
+    .then(setProductions)
+
+  }, [])
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const newProduction = {
+      title,
+      genre,
+      description,
+    };
+
+    // Send a POST request to create the new production
+    try {
+      const response = await fetch('/productions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newProduction),
+      });
+
+      const createdProduction = await response.json();
+      await setProductions((prevState) => [...prevState, createdProduction]); // Update state after the request is complete
+
+      // Clear the form fields after submitting
+      setTitle('');
+      setGenre("")
+      setDescription('');
+    } catch (error) {
+      console.error('Error creating production:', error);
+    }
+  };
+  
+  const handleEdit = (production) => {
+    setEditProduction(true)
+    setProductionEdit(production)
+  }
+
+  const handleDelete = (id) => {
+    fetch(`/productions/${id}`, {
+      method: "DELETE"
+    })
+    .then((res) => {
+      if (res.ok) {
+        setProductions((prevState) => prevState.filter((prod) => prod.id !== id));
+      } else {
+        console.error('Failed to delete production. Status:', res.status);
+      }
+    })
+    .catch((error) => {
+      console.error('Error deleting production:', error);
+    });
+  }
 
   return (
     <div>
-    <RouterProvider router ={router}/>
+      {editProduction ? (
+        <EditProductionForm production={production_edit} setEditProduction={setEditProduction} setProductions={setProductions} />
+      ):(
+      <form onSubmit={handleSubmit}>
+        <label>Title:</label>
+        <input type="text" name="title" value={title} onChange={handleTitle} />
+
+        <label>Genre:</label>
+        <input type="text" name="genre" value={genre} onChange={handleGenre} />
+
+        <label>Description:</label>
+        <textarea name="description" value={description} onChange={handleDescription} />
+
+        <button type="submit">Create Production</button>
+      </form>)
+      }
+
+      <hr />
+      {productions.map((production) => (
+        <div key={production.id}>
+          <h2>{production.title}</h2>
+          <p>{production.genre}</p>
+          <p>{production.description}</p>
+          <button onClick={() => handleEdit(production)}>Edit</button>
+          <button onClick={() => handleDelete(production.id)}>Delete</button>
+        </div>
+      ))}
     </div>
   )
 }
@@ -51,10 +116,4 @@ function App(){
 
 export default App
 
-const GlobalStyle = createGlobalStyle`
-  body{
-    background-color: black; 
-    color:white;
-  }
-  `
 
