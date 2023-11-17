@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.orm import validates
 #Review
 #Import validates from sqlalchemy.orm
 from sqlalchemy.orm import validates
@@ -49,10 +50,10 @@ class CrewMember(db.Model, SerializerMixin):
     #add a validation using @validates()
     #Navigate to app.py
 
+
     @validates('role')
     def validate_role(self, key, value):
         if not value:
             raise ValueError("Role Cannot be empty")
         return value
-    
 

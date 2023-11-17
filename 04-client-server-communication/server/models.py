@@ -1,18 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import validates
-#Review: Serializer rules, validations
 db = SQLAlchemy()
-#There are many ways to include constraints in models
-#db.CheckConstraint
-#nullable = False
-#unique = True
-#@validates('')
 
 class Production(db.Model, SerializerMixin):
     __tablename__ = 'productions'
 
-    # 1.✅ Add Constraints to the Columns 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     genre = db.Column(db.String, nullable=False)
@@ -24,15 +17,13 @@ class Production(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     crew_members = db.relationship('CrewMember', backref='production')
- 
-        
-    # serialize_rules = ('-crew_members.production',)
-    serialize_rules = ('-crew_members', '-created_at', '-updated_at',)
-    #add a validation using @validates()
-    @validates('title')
+
+    serialize_rules = ('-crew_members.production',)
+
+    @validates("title")
     def validate_title(self, key, value):
         if not value:
-            raise ValueError("Title cannot be empty")
+            raise ValueError("Title cant be empty")
         return value
     
     # 2.✅ Use the "validates" decorator to create a validation for images
@@ -62,15 +53,12 @@ class CrewMember(db.Model, SerializerMixin):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     production_id = db.Column(db.Integer, db.ForeignKey('productions.id'))
     
-    # serialize_rules = ('-production.crew_members',)
-    serialize_rules = ('-production',)
-    #add a validation using @validates( )
+    serialize_rules = ('-production.crew_members',)
+    
+
     @validates('role')
     def validate_role(self, key, value):
         if not value:
-            raise ValueError("Role cannot be empty")
+            raise ValueError("Role Cannot be empty")
         return value
     
-    def __repr__(self):
-        return f'<Production Name:{self.name}, Role:{self.role}'
-

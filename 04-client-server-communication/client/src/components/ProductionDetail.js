@@ -1,4 +1,4 @@
-import  {useParams, useHistory } from 'react-router-dom'
+import  {useParams, useNavigate } from 'react-router-dom'
 import {useEffect, useState} from 'react'
 import styled from 'styled-components'
 
@@ -6,26 +6,16 @@ function ProductionDetail({handleEdit, deleteProduction}) {
   const [production, setProduction] = useState({cast_members:[]})
   const [error, setError] = useState(null)
   const params = useParams()
-  const history = useHistory()
-  useEffect(()=>{
-    fetch(`/productions/${params.id}`)
-    .then(res => res.json())
-    .then(setProduction)
-  },[])
+  // const history = useNavigate()
 
-  const handleDelete = (production) => {
-    fetch(`/productions/${params.id}`, {
-      method: "DELETE"
-    })
-    .then(()=> {
-      deleteProduction(production)
-      history.push('/')
-    })
-  }
+  //6. Get One Production
+  
+
+
+  //7. Create a Delete Button and add a fetch request that will delete a production 
 
   
-  const {id, title, genre, image,description, cast_members} = production 
-  if(error) return <h2>{error}</h2>
+  const {id, title, genre, image,description, crew_members} = production 
   return (
       <CardDetail id={id}>
         <h1>{title}</h1>
@@ -37,15 +27,15 @@ function ProductionDetail({handleEdit, deleteProduction}) {
               <p>{description}</p>
               <h2>Cast Members</h2>
               <ul>
-              {cast_members && cast_members.map(cast => (
+              {/* {cast_members && cast_members.map(cast => (
                 <li key={cast.id}>{`${cast.role} : ${cast.name}`}</li>
-              ))}
+              ))} */}
               </ul>
             </div>
             <img alt = " " src={image}/>
           </div>
-      <button onClick={()=> handleEdit(production)} >Edit Production</button>
-      <button onClick={()=> handleDelete(production)} >Delete Production</button>
+      {/* <button onClick={()=> handleEdit(production)} >Edit Production</button>
+      <button onClick={()=> handleDelete(production)} >Delete Production</button> */}
 
       </CardDetail>
     )

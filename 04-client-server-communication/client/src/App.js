@@ -1,7 +1,7 @@
 // 📚 Review With Students:
     // Request response cycle
     //Note: This was build using v5 of react-router-dom
-import { Route, Switch, useHistory } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, useNavigate } from 'react-router-dom'
 import {createGlobalStyle} from 'styled-components'
 import {useEffect, useState} from 'react'
 import Home from './components/Home'
@@ -11,66 +11,50 @@ import Navigation from './components/Navigation'
 import ProductionDetail from './components/ProductionDetail'
 import NotFound from './components/NotFound'
 
-function App() {
+function App(){
+      //Note: This may be a good opportunity to refactor with context
   const [productions, setProductions] = useState([])
   const [production_edit, setProductionEdit] = useState(false)
-  const history = useHistory()
-  //5.✅ GET Productions
-  //What do i need to implenent here in order to get productions only once?
-  useEffect(()=> {
-    fetch("/productions")
-    .then(res => res.json())
-    .then(setProductions)
+  // const navigate = useNavigate()
+  //4. GET Productions
+  //navigate to client/src/components/ProductionForm.js
 
-  }, [])
-  
-  // 6.✅ navigate to client/src/components/ProductionForm.js
 
-  const addProduction = (production) => setProductions(productions => [...productions,production])
-  const updateProduction = (updated_production) => setProductions(productions => productions.map(production =>{
-    if(production.id === updated_production.id){
-      return updated_production
-    } else {
-      return production
-    }
-  } ))
+  const addProduction = (production) => setProductions(current => [...current,production])
+  const updateProduction = (updated_production) => setProductions(productions => productions.map(production => production.id == updated_production.id? updated_production : production))
   const deleteProduction = (deleted_production) => setProductions(productions => productions.filter((production) => production.id !== deleted_production.id) )
 
   const handleEdit = (production) => {
     setProductionEdit(production)
-    history.push(`/productions/edit/${production.id}`)
+    // navigate(`/productions/edit/${production.id}`)
   }
+
+  const  router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path ="/" element={<Navigation />}>
+        <Route index element={<Home productions={productions} />}/>
+        <Route  path='/productions/new' element={<ProductionForm addProduction={addProduction}/>}/>
+        <Route  path='/productions/edit/:id' elemebt={<ProductionEdit updateProduction={updateProduction} production_edit={production_edit}/>}/>
+        <Route path='/productions/:id' element={<ProductionDetail handleEdit={handleEdit} deleteProduction={deleteProduction} />}/>
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    )
+  )
+
   return (
-    <>
-    <GlobalStyle />
-    <Navigation handleEdit={handleEdit}/>
-      <Switch>
-        <Route  path='/productions/new'>
-          <ProductionForm addProduction={addProduction}/>
-        </Route>
-        <Route  path='/productions/edit/:id'>
-          <ProductionEdit updateProduction={updateProduction} production_edit={production_edit}/>
-        </Route>
-        <Route path='/productions/:id'>
-            <ProductionDetail handleEdit={handleEdit} deleteProduction={deleteProduction} />
-        </Route>
-        <Route exact path='/'>
-          <Home  productions={productions} />
-        </Route>
-        <Route>
-          <NotFound />
-        </Route>
-      </Switch>
-    </>
+    <div>
+    <RouterProvider router ={router}/>
+    </div>
   )
 }
+
 
 export default App
 
 const GlobalStyle = createGlobalStyle`
-    body{
-      background-color: black; 
-      color:white;
-    }
-    `
+  body{
+    background-color: black; 
+    color:white;
+  }
+  `
 
