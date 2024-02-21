@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 # 📚 Review With Students:
+    #MVC - flask is a microframework that allows us to build webapplications
+    #Also known as an MVC (Model, View, Controller)
     # Creating and seeding models using SQLAlchemy, import model into app
 
 # Set Up:
@@ -44,6 +46,22 @@ db.init_app(app)
 #When we post we can get the data by using request.form.get("field")
 #Then we can make a response with make_response() and return a status code
 # https://www.restapitutorial.com/httpstatuscodes.html 
+
+#Demonstate an MVC
+from flask import render_template
+
+@app.route("/")
+def index():
+    html = """
+    <html>
+    <head><title>My Page</title></head>
+    <body>
+        <h1>Welcome!</h1>
+        <p>This is some static HTML content.</p>
+    </body>
+    </html>
+    """
+    return html
 
 
 #2. make a get and post request to /productions, make responses and return a status code
@@ -99,5 +117,5 @@ def showProductionsById(id):
         return make_response("Invalid request", 400)
 
 
-# if __name__ == '__main__':
-#     app.run(port=5555)
+if __name__ == '__main__':
+    app.run(port=5555, debug=True)
