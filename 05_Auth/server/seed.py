@@ -8,6 +8,8 @@ with app.app_context():
     User.query.delete()
 
     stephen = User(name="Stephen", password="password")
+    test = User(name="test", password="test")
     db.session.add(stephen)
+    db.session.add(test)
     db.session.commit()
 
